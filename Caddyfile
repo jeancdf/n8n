@@ -1,0 +1,36 @@
+{
+    # Global options
+    email {$CADDY_EMAIL}
+    # Use Let's Encrypt production server (remove this line for testing)
+    acme_ca https://acme-v02.api.letsencrypt.org/directory
+}
+
+# Replace with your actual domain
+{$N8N_DOMAIN} {
+    # Enable compression for better performance
+    encode gzip
+
+    # Log access - useful for debugging
+    log {
+        output file /data/access.log {
+            roll_size 10MB
+            roll_keep 10
+        }
+    }
+
+    # Handle errors
+    handle_errors {
+        respond "{http.error.status_code} {http.error.status_text}"
+    }
+
+    # Proxy requests to n8n
+    reverse_proxy n8n:5678 {
+        # Websocket support for n8n realtime features
+        header_up X-Forwarded-Proto {scheme}
+        header_up X-Forwarded-For {remote_host}
+        header_up Host {host}
+        transport http {
+            keepalive 30s
+        }
+    }
+}
