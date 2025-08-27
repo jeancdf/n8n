@@ -18,7 +18,7 @@ services:
       - N8N_PROTOCOL=${N8N_PROTOCOL}
       - TZ=${TZ}
     ports:
-      - "127.0.0.1:5678:5678"
+      - "5678:5678"
     volumes:
       - n8n_data:/home/node/.n8n
     depends_on:
